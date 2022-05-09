@@ -41,7 +41,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -80,7 +82,8 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEditText = binding.password;
         final EditText emailEditText = binding.email;
         final EditText useridEditText = binding.userId;
-        final Button loginButton = binding.login;
+        final Button SignInButton = binding.SignIn;
+        final Button SignUpButton = binding.SignUp;
         final ProgressBar loadingProgressBar = binding.loading;
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -89,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 //                if (loginFormState == null) {
 //                    return;
 //                }
-//                loginButton.setEnabled(loginFormState.isDataValid());
+//                SignInButton.setEnabled(loginFormState.isDataValid());
 //                if (loginFormState.getUsernameError() != null) {
 //                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
 //                }
@@ -156,11 +159,79 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        SignUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String UserId = useridEditText.getText().toString();
+                String Name = usernameEditText.getText().toString();
+                String Email = emailEditText.getText().toString();
+                String Password = passwordEditText.getText().toString();
+
+                Thread th = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            String page = url+"Main/SignUp";
+                            URL urls = new URL(page);
+                            HttpURLConnection conn = (HttpURLConnection) urls.openConnection();
+
+                            StringBuilder sb = new StringBuilder();
+                            if(conn!=null){
+                                conn.setConnectTimeout(10000);
+                                conn.setRequestMethod("POST");
+                                conn.setRequestProperty("Content-Type", "application/json");
+                                conn.setUseCaches(false);
+                                conn.setDoOutput(true);
+                                conn.setDoInput(true);
+
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("userId",UserId);
+                                jsonObject.put("name",Name);
+                                jsonObject.put("email",Email);
+                                jsonObject.put("password",Password);
+
+                                OutputStream os = conn.getOutputStream();
+                                os.write(jsonObject.toString().getBytes());
+                                os.flush();
+
+                                if(conn.getResponseCode()==HttpURLConnection.HTTP_OK){
+                                    InputStream is = conn.getInputStream();
+                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                    byte[] byteBuffer = new byte[1024];
+                                    int nLength;
+                                    while((nLength = is.read(byteBuffer, 0, byteBuffer.length))!= -1){
+                                        baos.write(byteBuffer,0,nLength);
+                                    }
+                                    byte[] byteData = baos.toByteArray();
+
+                                    JSONObject responseJSON = new JSONObject(new String(byteData));
+                                    System.out.println(responseJSON.get("Name"));
+                                }
+                                conn.disconnect();
+                            }
+                            System.out.println(sb.toString());
+
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                th.start();
+
+            }
+        });
+
+
+        SignInButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
 
                 String UserId = useridEditText.getText().toString();
                 String Name = usernameEditText.getText().toString();
@@ -172,24 +243,38 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
 
                         try {
-                            String page = url+"Main";
+                            String page = url+"Main/SignIn";
                             URL urls = new URL(page);
                             HttpURLConnection conn = (HttpURLConnection) urls.openConnection();
                             StringBuilder sb = new StringBuilder();
                             if(conn!=null){
                                 conn.setConnectTimeout(10000);
-                                conn.setRequestMethod("GET");
+                                conn.setRequestMethod("POST");
+                                conn.setRequestProperty("Content-Type", "application/json");
                                 conn.setUseCaches(false);
+                                conn.setDoOutput(true);
+                                conn.setDoInput(true);
 
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("userId",UserId);
+                                jsonObject.put("password",Password);
+
+                                OutputStream os = conn.getOutputStream();
+                                os.write(jsonObject.toString().getBytes());
+                                os.flush();
 
                                 if(conn.getResponseCode()==HttpURLConnection.HTTP_OK){
-                                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-                                    while(true){
-                                        String line = br.readLine();
-                                        if(line == null) break;
-                                        sb.append(line+"\n");
+                                    InputStream is = conn.getInputStream();
+                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                    byte[] byteBuffer = new byte[1024];
+                                    int nLength;
+                                    while((nLength = is.read(byteBuffer, 0, byteBuffer.length))!= -1){
+                                        baos.write(byteBuffer,0,nLength);
                                     }
-                                    br.close();
+                                    byte[] byteData = baos.toByteArray();
+
+                                    JSONObject responseJSON = new JSONObject(new String(byteData));
+                                    System.out.println(responseJSON.get("Name"));
                                 }
                                 conn.disconnect();
                             }
@@ -198,6 +283,8 @@ public class LoginActivity extends AppCompatActivity {
                         } catch (MalformedURLException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
@@ -283,6 +370,8 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
+
 
     }
 
