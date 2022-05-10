@@ -1,9 +1,15 @@
 package com.example.forcommunication.communication;
 
+import com.google.gson.annotations.SerializedName;
+
 public class UserDTO {
+    @SerializedName("UserId")
     private String UserId;
+    @SerializedName("Email")
     private String Email;
+    @SerializedName("Password")
     private String Password;
+    @SerializedName("Name")
     private String Name;
 
     public String getUserId(){

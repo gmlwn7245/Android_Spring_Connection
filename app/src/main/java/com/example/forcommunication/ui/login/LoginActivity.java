@@ -51,8 +51,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -84,6 +86,9 @@ public class LoginActivity extends AppCompatActivity {
         final EditText useridEditText = binding.userId;
         final Button SignInButton = binding.SignIn;
         final Button SignUpButton = binding.SignUp;
+
+        final Button RetrofitSignInButton = binding.RetrofitSignIn;
+        final Button RetrofitSignUpButton = binding.RetrofitSignUp;
         final ProgressBar loadingProgressBar = binding.loading;
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -125,37 +130,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 //Complete and destroy login activity once successful
                 finish();
-            }
-        });
-
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                //        passwordEditText.getText().toString());
-            }
-        };
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
-                }
-                return false;
             }
         });
 
@@ -232,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
+                System.out.println("--SignIn--");
                 String UserId = useridEditText.getText().toString();
                 String Name = usernameEditText.getText().toString();
                 String Email = emailEditText.getText().toString();
@@ -241,7 +215,6 @@ public class LoginActivity extends AppCompatActivity {
                 Thread th = new Thread(new Runnable() {
                     @Override
                     public void run() {
-
                         try {
                             String page = url+"Main/SignIn";
                             URL urls = new URL(page);
@@ -291,6 +264,82 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
                 th.start();
+
+
+                // 레트로핏
+                RetrofitSignInButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        System.out.println("--RetrofitSignIn--");
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(url)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+
+                        String UserId = useridEditText.getText().toString();
+                        String Password = passwordEditText.getText().toString();
+
+//                        UserDTO userDTO = new UserDTO();
+//                        userDTO.setUserId(UserId);
+//                        userDTO.setPassword(Password);
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        map.put("UserId", UserId);
+                        map.put("Password",Password);
+
+                        RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
+                        retrofitAPI.SignIn(map).enqueue(new Callback<UserDTO>() {
+                            @Override
+                            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                                System.out.println(response.body().getName());
+                            }
+                            @Override
+                            public void onFailure(Call<UserDTO> call, Throwable t) {
+                                System.out.println("fail");
+                            }
+                        });
+                    }
+                });
+
+                RetrofitSignUpButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        System.out.println("--RetrofitSignUp--");
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(url)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+
+                        String UserId = useridEditText.getText().toString();
+                        String Name = usernameEditText.getText().toString();
+                        String Email = emailEditText.getText().toString();
+                        String Password = passwordEditText.getText().toString();
+
+                        HashMap<String, String> userMap = new HashMap<String, String>();
+                        userMap.put("UserId", UserId);
+                        userMap.put("Password",Password);
+                        userMap.put("Email",Email);
+                        userMap.put("Name",Name);
+
+                        // 인터페이스와 객체 연결
+                        RetrofitAPI retrofitAPI = retrofit.create(RetrofitAPI.class);
+
+                        // 응답 요청
+                        Call<UserDTO> call = retrofitAPI.SignUp(userMap);
+
+                        // 응답 콜백 구현
+                        call.enqueue(new Callback<UserDTO>() {
+                            @Override
+                            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                               System.out.println(response.body().getName());
+                            }
+
+                            @Override
+                            public void onFailure(Call<UserDTO> call, Throwable t) {
+                                System.out.println("fail");
+                            }
+                        });
+                    }
+                });
 
  /*               try {
 //                    URL urlCon = new URL(url);
@@ -370,8 +419,9 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+    }
 
-
+    public void onClick(View v){
 
     }
 
