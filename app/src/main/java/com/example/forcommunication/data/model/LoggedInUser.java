@@ -1,23 +1,22 @@
 package com.example.forcommunication.data.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository
  */
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class LoggedInUser {
 
     private String userId;
+
     private String displayName;
 
-    public LoggedInUser(String userId, String displayName) {
-        this.userId = userId;
-        this.displayName = displayName;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
 }
