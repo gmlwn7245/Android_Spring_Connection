@@ -1,5 +1,8 @@
 package com.example.forcommunication.communication;
 
+import com.example.forcommunication.util.HttpUrlConnectionUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,76 +13,59 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
 
 public class SpringConnection {
-    String url = "http://192.168.111.1:8080/";
+
+    private static final String HOST = "http://192.168.111.1:8080";
+
     public String HttpConnPOSTUser(String path, UserDTO userDTO) {
-        String result = "";
+
+        HttpURLConnection conn = null;
         try {
-            String page = url + path;
+            String page = HOST + path;
             URL urls = new URL(page);
-            HttpURLConnection conn = (HttpURLConnection) urls.openConnection();
+            conn = (HttpURLConnection) urls.openConnection();
 
-            StringBuilder sb = new StringBuilder();
             if (conn != null) {
-                conn.setConnectTimeout(10000);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setUseCaches(false);
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("userId", userDTO.getUserId());
-                jsonObject.put("name", userDTO.getName());
-                jsonObject.put("email", userDTO.getEmail());
-                jsonObject.put("password", userDTO.getPassword());
-
-                OutputStream os = conn.getOutputStream();
-                os.write(jsonObject.toString().getBytes());
-                os.flush();
+                HttpUrlConnectionUtils.setPostConfig(conn);
+                HttpUrlConnectionUtils.setRequestBody(conn, userDTO);
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStream is = conn.getInputStream();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] byteBuffer = new byte[1024];
-                    int nLength;
-                    while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
-                        baos.write(byteBuffer, 0, nLength);
-                    }
-                    byte[] byteData = baos.toByteArray();
+                    Map<String, Object> response = HttpUrlConnectionUtils.getResponse(conn,
+                            new TypeReference<Map<String, Object>>() {
+                            }
+                    );
 
-                    JSONObject responseJSON = new JSONObject(new String(byteData));
-                    System.out.println("name:"+responseJSON.get("Name"));
-                    result = responseJSON.get("Message").toString();
+                    return Optional.ofNullable(response)
+                            .map(res -> res.get("Message"))
+                            .map(Object::toString)
+                            .orElse("");
                 }
+            }
+
+            return "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
-            System.out.println(sb.toString());
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-
-        return result;
     }
 
     public String HttpConnGETUser(String path) {
         String result = "";
         try {
-            String page = url + path;
+            String page = HOST + path;
             URL urls = new URL(page);
             HttpURLConnection conn = (HttpURLConnection) urls.openConnection();
 
             StringBuilder sb = new StringBuilder();
             if (conn != null) {
-                conn.setConnectTimeout(10000);
-                conn.setRequestMethod("GET");
-                conn.setDoInput(true);
+                HttpUrlConnectionUtils.setGetConfig(conn);
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     InputStream is = conn.getInputStream();
@@ -112,15 +98,13 @@ public class SpringConnection {
     public JSONObject HttpConnGETBill(String path) {
         JSONObject responseJSON = new JSONObject();
         try {
-            String page = url + path;
+            String page = HOST + path;
             URL urls = new URL(page);
             HttpURLConnection conn = (HttpURLConnection) urls.openConnection();
 
             StringBuilder sb = new StringBuilder();
             if (conn != null) {
-                conn.setConnectTimeout(10000);
-                conn.setRequestMethod("GET");
-                conn.setDoInput(true);
+                HttpUrlConnectionUtils.setGetConfig(conn);
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     InputStream is = conn.getInputStream();
@@ -152,18 +136,13 @@ public class SpringConnection {
     public JSONObject HttpConnPOSTBill(String path, BillDTO billDTO) {
         JSONObject resultJSON = new JSONObject();
         try {
-            String page = url + path;
+            String page = HOST + path;
             URL urls = new URL(page);
             HttpURLConnection conn = (HttpURLConnection) urls.openConnection();
 
             StringBuilder sb = new StringBuilder();
             if (conn != null) {
-                conn.setConnectTimeout(10000);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setUseCaches(false);
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
+                HttpUrlConnectionUtils.setPostConfig(conn);
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("userId", billDTO.getUserId());
@@ -189,7 +168,7 @@ public class SpringConnection {
                     }
                     byte[] byteData = baos.toByteArray();
 
-                     resultJSON = new JSONObject(new String(byteData));
+                    resultJSON = new JSONObject(new String(byteData));
                 }
                 conn.disconnect();
             }
@@ -205,4 +184,6 @@ public class SpringConnection {
 
         return resultJSON;
     }
+
+
 }
