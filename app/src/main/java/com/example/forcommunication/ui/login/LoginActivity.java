@@ -41,7 +41,6 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private RequestQueue queue;
     //private CallRetrofit call;
-    String url = "http://10.0.2.2:8080/";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         final EditText useridEditText = binding.userId;
         final Button SignInButton = binding.SignIn;
         final Button SignUpButton = binding.SignUp;
+        final Button CheckIdButton = binding.checkId;
+        final Button ChangePWButton = binding.ChangePW;
 
 //        final Button RetrofitSignInButton = binding.RetrofitSignIn;
 //        final Button RetrofitSignUpButton = binding.RetrofitSignUp;
@@ -103,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
                         SpringConnection sc = new SpringConnection();
                         UserDTO userDTO = new UserDTO(UserId,Name,Email,Password);
-                        String Message = sc.HttpConnUser("Main/SignUp", userDTO) + "님 회원가입 완료.";
+                        String Message = sc.HttpConnPOSTUser("Main/SignUp", userDTO) + "님 회원가입 완료.";
                         System.out.println(Message);
                     }
                 });
@@ -127,11 +128,59 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
                          SpringConnection sc = new SpringConnection();
                          UserDTO userDTO = new UserDTO(UserId,Name,Email,Password);
-                         String Message = sc.HttpConnUser("Main/SignIn", userDTO) + "님 로그인 완료.";
+                         String Message = sc.HttpConnPOSTUser("Main/SignIn", userDTO) + "님 로그인 완료.";
                          System.out.println(Message);
                     }
                 });
                 th.start();
+                System.out.println(UserId + ':' + Name + ':' + Email + ':' + Password);
+
+            }
+        });
+
+        ChangePWButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                System.out.println("--ChangePW--");
+                String UserId = useridEditText.getText().toString();
+                String Password = passwordEditText.getText().toString();
+
+                Thread th = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SpringConnection sc = new SpringConnection();
+                        UserDTO userDTO = new UserDTO(UserId,"","",Password);
+                        String Message = sc.HttpConnPOSTUser("Main/ChangePW", userDTO);
+                        System.out.println(Message);
+                    }
+                });
+                th.start();
+
+            }
+        });
+
+        CheckIdButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                System.out.println("--CheckId--");
+                String UserId = useridEditText.getText().toString();
+
+                Thread th = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SpringConnection sc = new SpringConnection();
+                        String query = "?userId="+UserId;
+                        String Message = sc.HttpConnGETUser("Main/CheckId"+query);
+                        System.out.println(Message);
+                    }
+                });
+                th.start();
+            }
+        });
+
+
 
 /*
                 // 레트로핏
@@ -229,15 +278,6 @@ public class LoginActivity extends AppCompatActivity {
 //                        });
 
 
-
-
-
-                //JsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create()
-
-                System.out.println(UserId + ':' + Name + ':' + Email + ':' + Password);
-
-            }
-        });
     }
 
 

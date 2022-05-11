@@ -12,8 +12,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class SpringConnection {
-    String url = "";
-    public String HttpConnUser(String path, UserDTO userDTO) {
+    String url = "http://192.168.111.1:8080/";
+    public String HttpConnPOSTUser(String path, UserDTO userDTO) {
         String result = "";
         try {
             String page = url + path;
@@ -51,7 +51,48 @@ public class SpringConnection {
 
                     JSONObject responseJSON = new JSONObject(new String(byteData));
                     System.out.println("name:"+responseJSON.get("Name"));
-                    result = responseJSON.get("Name").toString();
+                    result = responseJSON.get("Message").toString();
+                }
+                conn.disconnect();
+            }
+            System.out.println(sb.toString());
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public String HttpConnGETUser(String path) {
+        String result = "";
+        try {
+            String page = url + path;
+            URL urls = new URL(page);
+            HttpURLConnection conn = (HttpURLConnection) urls.openConnection();
+
+            StringBuilder sb = new StringBuilder();
+            if (conn != null) {
+                conn.setConnectTimeout(10000);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStream is = conn.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    int nLength;
+                    while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byte[] byteData = baos.toByteArray();
+
+                    JSONObject responseJSON = new JSONObject(new String(byteData));
+                    result = responseJSON.get("Message").toString();
                 }
                 conn.disconnect();
             }
