@@ -52,7 +52,7 @@ public class BillActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String UserId = "user001";
-                String Date = "2023-5";
+                String Date = "2023-6";
                 int TotalFee = 10000;
                 int WaterFee = 3000;
                 int WaterUsage = 2000;
@@ -64,8 +64,8 @@ public class BillActivity extends AppCompatActivity {
                     public void run() {
                         SpringConnection sc = new SpringConnection();
                         BillDTO billDTO = new BillDTO(UserId, Date, TotalFee, WaterFee, WaterUsage, ElectricityFee, ElectricityUsage);
-                        JSONObject resultJSON = sc.HttpConnPOSTBill("Bill/InsertBill", billDTO);
-                        System.out.println(resultJSON);
+                        String result = sc.HttpConnPOSTBill("Bill/InsertBill", billDTO);
+                        System.out.println(result);
                     }
                 });
                 th.start();
@@ -76,9 +76,9 @@ public class BillActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String UserId = "user001";
-                String Date = "2023-5";
+                String Date = "2023-6";
                 int TotalFee = 10200;
-                int WaterFee = 3000;
+                int WaterFee = 3033;
                 int WaterUsage = 2000;
                 int ElectricityFee = 7000;
                 int ElectricityUsage = 5000;
@@ -88,8 +88,8 @@ public class BillActivity extends AppCompatActivity {
                     public void run() {
                         SpringConnection sc = new SpringConnection();
                         BillDTO billDTO = new BillDTO(UserId, Date, TotalFee, WaterFee, WaterUsage, ElectricityFee, ElectricityUsage);
-                        JSONObject resultJSON = sc.HttpConnPOSTBill("Bill/UpdateBill", billDTO);
-                        System.out.println(resultJSON);
+                        String result = sc.HttpConnPOSTBill("Bill/UpdateBill", billDTO);
+                        System.out.println(result);
                     }
                 });
                 th.start();
@@ -100,15 +100,15 @@ public class BillActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String UserId = "user001";
-                String Date = "2022-4";
+                String Date = "2023-6";
 
                 Thread th = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         SpringConnection sc = new SpringConnection();
                         String query = "?userId="+UserId+"&"+"date="+Date;
-                        JSONObject resultJSON = sc.HttpConnGETBill("Bill/GetBill"+query);
-                        System.out.println(resultJSON);
+                        String result = sc.HttpConnGETBill("Bill/GetBill"+query);
+                        System.out.println(result);
                     }
                 });
                 th.start();
@@ -126,14 +126,12 @@ public class BillActivity extends AppCompatActivity {
                     public void run() {
                         SpringConnection sc = new SpringConnection();
                         String query = "?userId="+UserId;
-                        JSONObject resultJSON = sc.HttpConnGETBill("Bill/GetBillList"+query);
-                        System.out.println(resultJSON);
+                        String result = sc.HttpConnGETBill("Bill/GetBillList"+query);
+                        System.out.println(result);
                     }
                 });
                 th.start();
             }
         });
-
-
     }
 }

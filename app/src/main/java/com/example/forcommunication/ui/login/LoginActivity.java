@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
                         SpringConnection sc = new SpringConnection();
                         UserDTO userDTO = new UserDTO(UserId,Name,Email,Password);
-                        String Message = sc.HttpConnPOSTUser("Main/SignUp", userDTO) + "님 회원가입 완료.";
+                        String Message = sc.HttpConnPOSTUser("Main/SignUp", userDTO);
                         System.out.println(Message);
                     }
                 });
@@ -128,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
                          SpringConnection sc = new SpringConnection();
                          UserDTO userDTO = new UserDTO(UserId,Name,Email,Password);
-                         String Message = sc.HttpConnPOSTUser("Main/SignIn", userDTO) + "님 로그인 완료.";
+                         String Message = sc.HttpConnPOSTUser("Main/SignIn", userDTO);
                          System.out.println(Message);
                     }
                 });

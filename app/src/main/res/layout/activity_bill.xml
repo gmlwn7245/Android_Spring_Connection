@@ -12,26 +12,25 @@
     tools:context=".ui.login.BillActivity">
 
     <Button
+        android:id="@+id/GetChartBill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginBottom="140dp"
+        android:enabled="true"
+        android:text="6개월 고지서"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/RegisterBill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginBottom="616dp"
+        android:layout_marginBottom="436dp"
         android:enabled="true"
         android:text="고지서 등록하기"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/GetBill"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginBottom="328dp"
-        android:enabled="true"
-        android:text="고지서 조회하기"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -42,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginBottom="532dp"
+        android:layout_marginBottom="344dp"
         android:enabled="true"
         android:text="고지서 변경하기"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -51,15 +50,16 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/GetChartBill"
+        android:id="@+id/GetBill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginBottom="228dp"
+        android:layout_marginBottom="240dp"
         android:enabled="true"
-        android:text="6개월 고지서"
+        android:text="고지서 조회하기"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <!--    <Button-->
